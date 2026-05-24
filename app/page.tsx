@@ -5,6 +5,8 @@ export default function Home() {
     <main
       style={{
         minHeight: "100vh",
+        backgroundColor: "black",
+        color: "white",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -13,13 +15,13 @@ export default function Home() {
       }}
     >
       
-      <p>Welcome to RouteSafe</p>
+      <p>RouteSafe</p>
 
       <Link href="/schedule">
         <button
           style={{
             padding: 12,
-            backgroundColor: "white",
+            backgroundColor: "lime",
             color: "black",
             border: "none",
             borderRadius: 8,
@@ -29,6 +31,21 @@ export default function Home() {
           Schedule A Ride
         </button>
       </Link>
+
+      <Link href="/about">
+  <button
+    style={{
+      padding: 12,
+      backgroundColor: "lime",
+      color: "black",
+      border: "none",
+      borderRadius: 8,
+      cursor: "pointer"
+    }}
+  >
+    About
+  </button>
+</Link>
     </main>
   );
 }

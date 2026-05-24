@@ -83,7 +83,13 @@ setSubmitted(true);
         <input
           placeholder="Phone Number"
           value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })
+        }
+        style={{
+          padding: 10,
+          borderRadius: 8,
+          border: "none",
+        }}
         />
         <input
           placeholder="Pickup Location"
