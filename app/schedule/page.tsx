@@ -5,6 +5,7 @@ import { useState } from "react";
 export default function Page() {
   const [formData, setFormData] = useState({
     fullName: "",
+    phone: "",
     pickupLocation: "",
     dropoffLocation: "",
     pickupDate: "",
@@ -78,6 +79,11 @@ setSubmitted(true);
             borderRadius: 8,
             border: "none",
           }}
+        />
+        <input
+          placeholder="Phone Number"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
         />
         <input
           placeholder="Pickup Location"
