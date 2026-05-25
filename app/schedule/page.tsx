@@ -85,7 +85,7 @@ export default function Page() {
     >
       <h1>RouteSafe</h1>
 
-      <h2>Schedule a Ride with Wyatt</h2>
+      <h2>Schedule a Ride with a Driver</h2>
 
       <p
         style={{
