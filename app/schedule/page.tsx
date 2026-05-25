@@ -21,6 +21,7 @@ export default function Page() {
     borderRadius: 10,
     fontWeight: "bold",
     cursor: "pointer",
+    opacity: 1,
   };
 
   const [formData, setFormData] = useState({
@@ -33,9 +34,32 @@ export default function Page() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    // 🧠 1. BLOCK EMPTY SUBMISSIONS
+    if (
+      !formData.fullName ||
+      !formData.phone ||
+      !formData.pickupLocation ||
+      !formData.dropoffLocation ||
+      !formData.pickupDate ||
+      !formData.pickupTime
+    ) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    // ⏱️ 2. ANTI-SPAM (1 minute cooldown)
+    const lastSubmit = localStorage.getItem("lastSubmitTime");
+    if (lastSubmit && Date.now() - Number(lastSubmit) < 60000) {
+      alert("Please wait 1 minute before submitting again.");
+      return;
+    }
+
+    setLoading(true);
 
     const { error } = await supabase.from("rides").insert([
       {
@@ -48,11 +72,15 @@ export default function Page() {
       },
     ]);
 
+    setLoading(false);
+
     if (error) {
       alert(error.message);
       console.log(error);
       return;
     }
+
+    localStorage.setItem("lastSubmitTime", Date.now().toString());
 
     setSubmitted(true);
 
@@ -85,18 +113,10 @@ export default function Page() {
     >
       <h1>RouteSafe</h1>
 
-      <h2>Schedule a Ride with a Driver</h2>
+      <h2>Schedule a Ride with Wyatt</h2>
 
-      <p
-        style={{
-          maxWidth: 400,
-          textAlign: "center",
-          color: "#ccc",
-        }}
-      >
-        Schedule a safe ride with a driver 12-24 hours in advance. Please provide
-        your pickup and dropoff locations, as well as your preferred pickup
-        date and time.
+      <p style={{ maxWidth: 400, textAlign: "center", color: "#ccc" }}>
+        Schedule a safe ride with Wyatt 12-24 hours in advance.
       </p>
 
       <form
@@ -164,8 +184,8 @@ export default function Page() {
           style={inputStyle}
         />
 
-        <button type="submit" style={buttonStyle}>
-          Confirm Ride
+        <button type="submit" style={buttonStyle} disabled={loading}>
+          {loading ? "Submitting..." : "Confirm Ride"}
         </button>
       </form>
 
