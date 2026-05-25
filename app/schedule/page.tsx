@@ -15,39 +15,35 @@ export default function Page() {
   });
   const [submitted, setSubmitted] = useState(false);
 
- async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-  e.preventDefault();
 
-  const { error } = await supabase.from("rides").insert([
-    {
-      name: formData.fullName,
-      phone: formData.phone,
-      pickup: formData.pickupLocation,
-      dropoff: formData.dropoffLocation,
-      pickup_date: formData.pickupDate,
-      pickup_time: formData.pickupTime,
-    },
-  ]);
+    const { error } = await supabase.from("rides").insert([
+      {
+        name: formData.fullName,
+        phone: formData.phone,
+        pickup: formData.pickupLocation,
+        dropoff: formData.dropoffLocation,
+        pickup_date: formData.pickupDate,
+        pickup_time: formData.pickupTime,
+      },
+    ]);
 
-  if (error) {
-    console.log("ERROR:", error.message);
-    return;
-  }
+    if (error) {
+      console.log("ERROR:", error.message);
+      return;
+    }
 
-  setSubmitted(true);
+    setSubmitted(true);
 
-  setFormData({
-    fullName: "",
-    phone: "",
-    pickupLocation: "",
-    dropoffLocation: "",
-    pickupDate: "",
-    pickupTime: "",
-  });
-}
-    
+    setFormData({
+      fullName: "",
+      phone: "",
+      pickupLocation: "",
+      dropoffLocation: "",
+      pickupDate: "",
+      pickupTime: "",
+    });
   }
 
   return (
@@ -102,12 +98,11 @@ async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         <input
           placeholder="Phone Number"
           value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })
-        }
-        style={{
-          padding: 10,
-          borderRadius: 8,
-          border: "none",
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          style={{
+            padding: 10,
+            borderRadius: 8,
+            border: "none",
         }}
         />
         <input
