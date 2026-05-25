@@ -1,6 +1,8 @@
 "use client";
 
+
 import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Page() {
   const [formData, setFormData] = useState({
@@ -15,20 +17,37 @@ export default function Page() {
 
  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
 
-    const response = await fetch("/api/rides", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(formData),
-});
+  const { error } = await supabase.from("rides").insert([
+    {
+      name: formData.fullName,
+      phone: formData.phone,
+      pickup: formData.pickupLocation,
+      dropoff: formData.dropoffLocation,
+      pickup_date: formData.pickupDate,
+      pickup_time: formData.pickupTime,
+    },
+  ]);
 
-const data = await response.json();
+  if (error) {
+    console.log("ERROR:", error.message);
+    return;
+  }
 
-console.log(data);
+  setSubmitted(true);
 
-setSubmitted(true);
+  setFormData({
+    fullName: "",
+    phone: "",
+    pickupLocation: "",
+    dropoffLocation: "",
+    pickupDate: "",
+    pickupTime: "",
+  });
+}
+    
   }
 
   return (
