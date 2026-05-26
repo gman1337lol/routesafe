@@ -89,7 +89,12 @@ if (duplicate && duplicate.length > 0) {
     setLoading(false);
 
     if (error) {
-      alert(error.message);
+      if (error.message.includes("Too many requests")) {
+        alert("Please wait a moment before booking another ride.");
+      } else {
+        alert(error.message);
+      }
+
       console.log(error);
       return;
     }
@@ -127,10 +132,10 @@ if (duplicate && duplicate.length > 0) {
     >
       <h1>RouteSafe</h1>
 
-      <h2>Schedule a Ride with Wyatt</h2>
+      <h2>Schedule a Ride with a Driver</h2>
 
       <p style={{ maxWidth: 400, textAlign: "center", color: "#ccc" }}>
-        Schedule a safe ride with Wyatt 12-24 hours in advance.
+        Schedule a safe ride with a Driver 12-24 hours in advance.
       </p>
 
       <form
