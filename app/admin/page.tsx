@@ -12,9 +12,10 @@ type Ride = {
   pickup_date: string;
   pickup_time: string;
   status: string;
+  driver: string | null;
 };
 
-const ADMIN_PASSWORD = "route123"; // change anytime
+const ADMIN_PASSWORD = "route123";
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -22,6 +23,11 @@ export default function AdminPage() {
 
   const [rides, setRides] = useState<Ride[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // store selected driver per ride (keyed by ride id)
+  const [selectedDrivers, setSelectedDrivers] = useState<{
+    [key: number]: string;
+  }>({});
 
   useEffect(() => {
     if (authenticated) fetchRides();
@@ -56,14 +62,38 @@ export default function AdminPage() {
     fetchRides();
   }
 
+  async function assignDriver(id: number) {
+    const driver = selectedDrivers[id];
+
+    if (!driver) {
+      alert("Pick a driver first");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("rides")
+      .update({
+        driver: driver,
+        status: "assigned",
+      })
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    fetchRides();
+  }
+
   if (!authenticated) {
     return (
       <div style={{ padding: 20, background: "black", color: "white", minHeight: "100vh" }}>
         <h2 style={{ color: "#00ff66" }}>Admin Login</h2>
 
         <input
-          placeholder="Enter password"
           type="password"
+          placeholder="Enter password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           style={{
@@ -126,26 +156,56 @@ export default function AdminPage() {
                 </span>
               </p>
 
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <button onClick={() => updateStatus(ride.id, "test")}>
-                  Test
-                </button>
+              <p>
+                <b>Driver:</b>{" "}
+                <span style={{ color: "#00ff66" }}>
+                  {ride.driver || "unassigned"}
+                </span>
+              </p>
 
-                <button onClick={() => updateStatus(ride.id, "pending")}>
-                  Pending
-                </button>
+              {/* DRIVER ASSIGN SECTION */}
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                <select
+                  value={selectedDrivers[ride.id] || ""}
+                  onChange={(e) =>
+                    setSelectedDrivers({
+                      ...selectedDrivers,
+                      [ride.id]: e.target.value,
+                    })
+                  }
+                  style={{
+                    padding: 8,
+                    borderRadius: 6,
+                    background: "black",
+                    color: "white",
+                    border: "1px solid #00ff66",
+                  }}
+                >
+                  <option value="">Select Driver</option>
+                  <option value="Wyatt">Wyatt</option>
+                  <option value="Driver 2">Driver 2</option>
+                  <option value="Driver 3">Driver 3</option>
+                </select>
 
-                <button onClick={() => updateStatus(ride.id, "assigned")}>
-                  Assigned
+                <button
+                  onClick={() => assignDriver(ride.id)}
+                  style={{
+                    padding: 8,
+                    background: "#00ff66",
+                    border: "none",
+                    borderRadius: 6,
+                  }}
+                >
+                  Assign
                 </button>
+              </div>
 
-                <button onClick={() => updateStatus(ride.id, "completed")}>
-                  Completed
-                </button>
-
-                <button onClick={() => updateStatus(ride.id, "cancelled")}>
-                  Cancel
-                </button>
+              {/* STATUS BUTTONS */}
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
+                <button onClick={() => updateStatus(ride.id, "test")}>Test</button>
+                <button onClick={() => updateStatus(ride.id, "pending")}>Pending</button>
+                <button onClick={() => updateStatus(ride.id, "completed")}>Completed</button>
+                <button onClick={() => updateStatus(ride.id, "cancelled")}>Cancel</button>
               </div>
             </div>
           ))}
