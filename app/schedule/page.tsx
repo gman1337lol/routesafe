@@ -37,28 +37,42 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+ e.preventDefault();
 
-    // 🧠 1. BLOCK EMPTY SUBMISSIONS
-    if (
-      !formData.fullName ||
-      !formData.phone ||
-      !formData.pickupLocation ||
-      !formData.dropoffLocation ||
-      !formData.pickupDate ||
-      !formData.pickupTime
-    ) {
-      alert("Please fill out all fields.");
-      return;
-    }
+// 🧠 1. BLOCK EMPTY SUBMISSIONS (FIRST)
+if (
+  !formData.fullName ||
+  !formData.phone ||
+  !formData.pickupLocation ||
+  !formData.dropoffLocation ||
+  !formData.pickupDate ||
+  !formData.pickupTime
+) {
+  alert("Please fill out all fields.");
+  return;
+}
 
-    // ⏱️ 2. ANTI-SPAM (1 minute cooldown)
-    const lastSubmit = localStorage.getItem("lastSubmitTime");
-    if (lastSubmit && Date.now() - Number(lastSubmit) < 60000) {
-      alert("Please wait 1 minute before submitting again.");
-      return;
-    }
+// ⏱️ 2. COOLDOWN CHECK
+const lastSubmit = localStorage.getItem("lastSubmitTime");
 
+if (lastSubmit && Date.now() - Number(lastSubmit) < 60000) {
+  alert("Please wait 1 minute before submitting again.");
+  return;
+}
+
+// 🧠 3. DUPLICATE CHECK
+const { data: duplicate } = await supabase
+  .from("rides")
+  .select("*")
+  .eq("phone", formData.phone)
+  .eq("pickup", formData.pickupLocation)
+  .eq("dropoff", formData.dropoffLocation)
+  .eq("pickup_date", formData.pickupDate);
+
+if (duplicate && duplicate.length > 0) {
+  alert("You already scheduled this exact ride.");
+  return;
+}
     setLoading(true);
 
     const { error } = await supabase.from("rides").insert([
